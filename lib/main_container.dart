@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:core';
 
 class SliderBox extends StatefulWidget {
   const SliderBox({super.key});
@@ -11,41 +12,35 @@ class SliderBox extends StatefulWidget {
 }
 
 class _SliderBoxState extends State<SliderBox> {
-  final TextEditingController amountController = TextEditingController();
-  double _totalToBePaid = 0;
-
-  double _tipPercentage = 0;
+  double _totalToBePaid = 0.0;
+  double _tipPercentage = 0.0;
   int _totalPeople = 1;
-  double _tip = 0;
+  double _tip = 0, _billAmount = 0.0;
 
   _setPercentage(double val) {
     setState(() {
       _tipPercentage = val;
-      _tip = (_tipPercentage / 100) * double.parse(amountController.text);
-      _totalToBePaid =
-          (double.parse(amountController.text) + _tip) / _totalPeople;
+      _tip = (_tipPercentage / 100) * _billAmount;
+      _totalToBePaid = (_billAmount + _tip) / _totalPeople;
     });
   }
 
   _decrementPeople() {
     setState(() {
-      _totalPeople--;
-      _totalToBePaid =
-          (double.parse(amountController.text) + _tip) / _totalPeople;
+      if (_totalPeople == 1) {
+        _totalPeople = 1;
+      } else {
+        _totalPeople--;
+      }
+      _totalToBePaid = (_billAmount + _tip) / _totalPeople;
     });
   }
 
   _incrementPeople() {
     setState(() {
       _totalPeople++;
-      _totalToBePaid =
-          (double.parse(amountController.text) + _tip) / _totalPeople;
+      _totalToBePaid = (_billAmount + _tip) / _totalPeople;
     });
-
-    void dispose() {
-      amountController.dispose();
-      super.dispose();
-    }
   }
 
   @override
@@ -54,10 +49,13 @@ class _SliderBoxState extends State<SliderBox> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
+          margin:
+              EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.125),
           alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            padding: const EdgeInsets.all(20),
+            children: <Widget>[
               Container(
                 alignment: Alignment.center,
                 width: 350,
@@ -78,9 +76,9 @@ class _SliderBoxState extends State<SliderBox> {
                         fontSize: 18,
                       ),
                     ),
-                    Padding(padding: EdgeInsets.only(bottom: 10)),
+                    const Padding(padding: EdgeInsets.only(bottom: 10)),
                     Text(
-                      "\$ $_totalToBePaid",
+                      "\$ ${_totalToBePaid.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.deepPurple,
                         fontSize: 30,
@@ -94,11 +92,14 @@ class _SliderBoxState extends State<SliderBox> {
                 margin: const EdgeInsets.only(
                   top: 40,
                 ),
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 width: 350,
                 height: 300,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(
+                    color: Colors.blueGrey.shade100,
+                    style: BorderStyle.solid,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
@@ -118,21 +119,29 @@ class _SliderBoxState extends State<SliderBox> {
                         ),
                         Flexible(
                           child: TextField(
-                            controller: amountController,
                             textAlign: TextAlign.center,
-                            obscureText: false,
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    color: Colors.blueAccent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(25)),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
                             ),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                            decoration: const InputDecoration(
+                              prefixText: "Bill Amount",
+                              prefixIcon: Icon(
+                                Icons.attach_money,
+                              ),
+                            ),
+                            // inputFormatters: <TextInputFormatter>[
+                            //   FilteringTextInputFormatter.digitsOnly
+                            // ],
+                            onChanged: (String value) {
+                              try {
+                                _billAmount = double.parse(value);
+                              } catch (exception) {
+                                _billAmount = 0.0;
+                              }
+                            },
                           ),
                         ),
                       ],
@@ -148,7 +157,7 @@ class _SliderBoxState extends State<SliderBox> {
                       endIndent: 0,
                       thickness: 2,
                     ),
-                    Padding(padding: EdgeInsets.only(bottom: 20)),
+                    const Padding(padding: EdgeInsets.only(bottom: 20)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -163,8 +172,8 @@ class _SliderBoxState extends State<SliderBox> {
                           children: [
                             Container(
                               alignment: Alignment.center,
-                              width: 30,
                               height: 30,
+                              width: 30,
                               decoration: const BoxDecoration(
                                 color: Color.fromARGB(80, 155, 39, 176),
                                 borderRadius: BorderRadius.all(
@@ -173,35 +182,32 @@ class _SliderBoxState extends State<SliderBox> {
                               ),
                               margin: const EdgeInsets.only(right: 5),
                               child: InkWell(
-                                child: Text(
-                                  "-",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
                                 onTap: _decrementPeople,
+                                child: const Icon(Icons.remove),
                               ),
                             ),
                             Text("$_totalPeople"),
                             Container(
                               alignment: Alignment.center,
-                              width: 30,
                               height: 30,
-                              margin: EdgeInsets.only(left: 5),
-                              color: Color.fromARGB(80, 155, 39, 176),
+                              width: 30,
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(80, 155, 39, 176),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              margin: const EdgeInsets.only(left: 5),
                               child: InkWell(
-                                child: Text("+",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20)),
                                 onTap: _incrementPeople,
+                                child: const Icon(Icons.add),
                               ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    Padding(padding: EdgeInsets.only(top: 20)),
+                    const Padding(padding: EdgeInsets.only(top: 20)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -213,7 +219,7 @@ class _SliderBoxState extends State<SliderBox> {
                         ),
                         Text(
                           "\$ $_tip",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.deepPurple,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -232,7 +238,7 @@ class _SliderBoxState extends State<SliderBox> {
                       activeColor: Colors.purple,
                       min: 0,
                       max: 100,
-                      divisions: 5,
+                      divisions: 10,
                       value: _tipPercentage,
                       onChanged: (_tipPercentage) => _setPercentage(
                         _tipPercentage,
