@@ -61,7 +61,7 @@ class _SliderBoxState extends State<SliderBox> {
               Container(
                 alignment: Alignment.center,
                 width: 350,
-                height: 200,
+                height: 120,
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(80, 155, 39, 176),
                   borderRadius: BorderRadius.all(
@@ -78,6 +78,7 @@ class _SliderBoxState extends State<SliderBox> {
                         fontSize: 18,
                       ),
                     ),
+                    Padding(padding: EdgeInsets.only(bottom: 10)),
                     Text(
                       "\$ $_totalToBePaid",
                       style: const TextStyle(
@@ -95,7 +96,7 @@ class _SliderBoxState extends State<SliderBox> {
                 ),
                 padding: EdgeInsets.all(10),
                 width: 350,
-                height: 250,
+                height: 300,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(10),
@@ -147,30 +148,77 @@ class _SliderBoxState extends State<SliderBox> {
                       endIndent: 0,
                       thickness: 2,
                     ),
+                    Padding(padding: EdgeInsets.only(bottom: 20)),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Split between:"),
-                        Container(
-                          child: InkWell(
-                            onTap: _decrementPeople,
-                            child: const Text("-"),
+                        const Text(
+                          "Split between:",
+                          style: TextStyle(
+                            fontSize: 15,
                           ),
                         ),
-                        Text("$_totalPeople"),
-                        Container(
-                          child: InkWell(
-                            onTap: _incrementPeople,
-                            child: const Text("+"),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              width: 30,
+                              height: 30,
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(80, 155, 39, 176),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              margin: const EdgeInsets.only(right: 5),
+                              child: InkWell(
+                                child: Text(
+                                  "-",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                                onTap: _decrementPeople,
+                              ),
+                            ),
+                            Text("$_totalPeople"),
+                            Container(
+                              alignment: Alignment.center,
+                              width: 30,
+                              height: 30,
+                              margin: EdgeInsets.only(left: 5),
+                              color: Color.fromARGB(80, 155, 39, 176),
+                              child: InkWell(
+                                child: Text("+",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20)),
+                                onTap: _incrementPeople,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
+                    Padding(padding: EdgeInsets.only(top: 20)),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Tip:"),
-                        Text("$_tip"),
+                        const Text(
+                          "Tip:",
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          "\$ $_tip",
+                          style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     Text(
